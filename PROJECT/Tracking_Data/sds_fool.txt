@@ -1,0 +1,4 @@
+Apple_scab-0.2916666666666667,Black_rot-0.25,Cedar_apple_rust-0.20833333333333334,healthy-0.25
+
+Apple_scab-0.2916666666666667,Black_rot-0.25,Cedar_apple_rust-0.20833333333333334,healthy-0.25
+Apple_scab-0.2916666666666667,Black_rot-0.25,Cedar_apple_rust-0.20833333333333334,healthy-0.25Apple_scab-0.2916666666666667,Black_rot-0.25,Cedar_apple_rust-0.20833333333333334,healthy-0.25Apple_scab-0.2916666666666667,Black_rot-0.25,Cedar_apple_rust-0.20833333333333334,healthy-0.25

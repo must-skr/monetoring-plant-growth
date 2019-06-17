@@ -1,0 +1,89 @@
+import glob
+import os, os.path
+import cv2
+import cv2
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+
+TestFolder ='E:/GP Code/Kaggle/Kaggle/New Plant Diseases Dataset(Augmented)/Demo Test/Mine'
+FP = 'E:/GP Code/Kaggle/Kaggle/New Plant Diseases Dataset(Augmented)/Demo/Demo'
+def SaveMetaData(DataList):
+    TypeName = str.split(DataList[0],'_')
+    TypeName = TypeName[0]
+    FileName = 'MetaData/'+TypeName+'.txt'
+    f = open(FileName, "w+")
+    for i in range(0,len(DataList)):
+        f.write(DataList[i]+'\n')
+    f.close()
+def ReadImages(FolderPath):
+    ImagesList = []
+    FolderName =[]
+    for root, dirs, files in os.walk(FolderPath):
+        for name in dirs:
+            path = FolderPath + '/' + name + '/*.jpg'
+            FolderOfImage = []
+            FolderName.append(name)
+            for f in glob.glob(path):
+                img = cv2.imread(f)
+                FolderOfImage.append(img)
+
+            ImagesList.append(FolderOfImage)
+    return ImagesList,FolderName
+def TrainDataSet(ListOfImages):
+    ImagesFeatures = []
+    Label=[]
+    print('Extract Features')
+    for i in range (0,len(ListOfImages)):
+        FolderObject = ListOfImages[i]
+        for j in range(0,len(FolderObject)):
+            img_rz = cv2.resize(FolderObject[j], (64, 128))
+            hog = cv2.HOGDescriptor()
+            h = hog.compute(img_rz)
+            ImagesFeatures.append(h)
+            Label.append(i)
+    print('Features Extracted succesfully')
+    return ImagesFeatures , Label
+def CreateModel(ImagesFeatures ,Label):
+    ft_x = np.array(ImagesFeatures, np.float32)
+    ft_y = np.array(Label, np.int32)
+    svm = cv2.ml.SVM_create()
+    svm.setType(cv2.ml.SVM_C_SVC)
+    svm.setKernel(cv2.ml.SVM_RBF)
+    svm.setGamma(0.1)
+    print(Label)
+    svm.train(ft_x, cv2.ml.ROW_SAMPLE, ft_y)
+    svm.save('SVM_Gender_Model.dat')
+    print('Model created using SVM')
+def TestModel(TestFolderPath,ModelName):
+    Image = ReadImages(TestFolderPath)
+    Data = TrainDataSet(Image)
+    Label = Data[1]
+    Images = Data[0]
+    count =0
+    for i in range(0 ,len(Data[0])):
+
+        ft_x = np.array([Images[i]], np.float32)
+        svm = cv2.ml.SVM_load(ModelName)
+        response = svm.predict(ft_x)
+        num = response[1][0]
+        if(num == Label[i]):
+            count+=1
+    print(Label)
+    print('accuracy = ',count/len(Data[0]))
+
+
+IL = ReadImages(FP)
+print('len of Folders = ',len(IL[0]))
+print(IL[1])
+SaveMetaData(IL[1])
+#Data =TrainDataSet(IL)
+#CreateModel(Data[0],Data[1])
+
+#TestModel(TestFolder,'SVM_Gender_Model.dat')
